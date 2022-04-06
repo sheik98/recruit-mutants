@@ -12,5 +12,5 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 public class RequestDto {
-    private List<String> dna;
+    private String[] dna;
 }

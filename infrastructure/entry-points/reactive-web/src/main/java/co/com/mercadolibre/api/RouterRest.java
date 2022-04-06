@@ -1,17 +1,14 @@
 package co.com.mercadolibre.api;
 
 import co.com.mercadolibre.api.dto.RequestDto;
+import co.com.mercadolibre.usecase.recruitMutant.ValidateMutantUseCase;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.http.MediaType;
-import org.springframework.web.reactive.function.BodyInserter;
-import org.springframework.web.reactive.function.server.ServerResponse;
 import reactor.core.publisher.Mono;
 
 import static org.springframework.http.HttpStatus.FORBIDDEN;
-import static org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR;
 
 
 @CrossOrigin
@@ -19,14 +16,19 @@ import static org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR;
 @RequiredArgsConstructor
 @RequestMapping("/api/v1")
 public class RouterRest {
+    private final ValidateMutantUseCase validateMutantUseCase;
 
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE, path = "/mutant/")
-    public Mono<HttpStatus> isMutant(@RequestBody RequestDto requestDto){
-        return Mono.just(HttpStatus.OK);
+    public Mono<ResponseEntity<Object>> isMutant(@RequestBody RequestDto requestDto) {
+        return validateMutantUseCase.validateMutant(requestDto.getDna())
+                .map(aBoolean -> aBoolean.equals(Boolean.TRUE) ? ResponseEntity.ok().build()
+                         : ResponseEntity.status(FORBIDDEN).build())
+                .onErrorResume(throwable -> Mono.just(ResponseEntity.badRequest().build()));
     }
 
     @GetMapping(path = "/stats")
-    public Mono<ServerResponse> getStatsMutants(){
-        return ServerResponse.status(FORBIDDEN).build();
+    public Mono<ResponseEntity<Object>> getStatsMutants() {
+        return Mono.just("Stats")
+                .map(s -> ResponseEntity.ok().body((Object) s));
     }
 }
