@@ -7,11 +7,9 @@ import co.com.mercadolibre.mongodb.mutantstat.data.MutantStatData;
 import co.com.mercadolibre.mongodb.mutantstat.helper.AdapterOperations;
 import org.reactivecommons.utils.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.mongodb.core.FindAndModifyOptions;
 import org.springframework.data.mongodb.core.ReactiveMongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
-import org.springframework.data.mongodb.core.query.Update;
 import org.springframework.stereotype.Repository;
 import reactor.core.publisher.Mono;
 
@@ -20,6 +18,8 @@ public class MutantStatDataRepositoryAdapter extends AdapterOperations<MutantSta
 
 
     private final ReactiveMongoTemplate mongoTemplate;
+
+    private static final String IS_MUTANT= "isMutant";
 
     @Autowired
     public MutantStatDataRepositoryAdapter(MutantStatDataRepository repository,
@@ -30,26 +30,24 @@ public class MutantStatDataRepositoryAdapter extends AdapterOperations<MutantSta
     }
 
     @Override
-    public Mono<Boolean> saveStat(Boolean isMutant) {
-        Integer mutant = isMutant ? 1 : 0;
-        Integer human = !isMutant ? 1 : 0;
-        return mongoTemplate.findById(Query.query(Criteria.where("_id").is("MutantStatsId")), MutantStatData.class)
-                .flatMap(mutantStatData ->
-                        mongoTemplate.updateFirst(
-                                Query.query(Criteria.where("_id").is("MutantStatsId")),
-                                Update.update("ratio", getRatio(mutant, human, mutantStatData))
-                                        .inc("countMutantDna", mutant).inc("countHumanDna", human),
-                                MutantStatData.class))
+    public Mono<Boolean> saveDna(Boolean isMutant, String[] dna) {
+        return Mono.just(MutantStatData.builder()
+                .dna(dna)
+                .isMutant(isMutant)
+                .build())
+                .flatMap(mutantStatData -> repository.save(mutantStatData))
                 .thenReturn(isMutant);
 
     }
 
-    private int getRatio(Integer mutant, Integer human, MutantStatData mutantStatData) {
-        return mutantStatData.getCountHumanDna() == 0 && human == 0 ? 0 : (mutantStatData.getCountMutantDna() + mutant) / (mutantStatData.getCountHumanDna() + human);
-    }
-
     @Override
     public Mono<MutantStat> getStats() {
-        return null;
+        return mongoTemplate.count(Query.query(Criteria.where(IS_MUTANT).is(true)), MutantStatData.class)
+                .flatMap(mutants -> mongoTemplate.count(Query.query(Criteria.where(IS_MUTANT).is(false)), MutantStatData.class)
+                        .map(humans -> MutantStat.builder()
+                                .countMutantDna(Math.toIntExact(mutants))
+                                .countHumanDna(Math.toIntExact(humans))
+                                .ratio(humans==0 ? 0 : ((double) mutants/ (double) humans))
+                                .build()));
     }
 }

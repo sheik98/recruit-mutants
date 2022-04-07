@@ -1,6 +1,7 @@
 package co.com.mercadolibre.api;
 
 import co.com.mercadolibre.api.dto.RequestDto;
+import co.com.mercadolibre.model.mutantstat.MutantStat;
 import co.com.mercadolibre.usecase.recruitmutant.StatusMutantsUseCase;
 import co.com.mercadolibre.usecase.recruitmutant.ValidateMutantUseCase;
 import lombok.RequiredArgsConstructor;
@@ -21,16 +22,17 @@ public class RouterRest {
     private final StatusMutantsUseCase statusMutantsUseCase;
 
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE, path = "/mutant/")
-    public Mono<ResponseEntity<Object>> isMutant(@RequestBody RequestDto requestDto) {
+    public Mono<ResponseEntity<String>> isMutant(@RequestBody RequestDto requestDto) {
         return validateMutantUseCase.validateMutant(requestDto.getDna())
-                .map(aBoolean -> aBoolean.equals(Boolean.TRUE) ? ResponseEntity.ok().build()
-                         : ResponseEntity.status(FORBIDDEN).build())
-                .onErrorResume(throwable -> Mono.just(ResponseEntity.badRequest().build()));
+                .map(aBoolean -> aBoolean.equals(Boolean.TRUE) ? ResponseEntity.ok().body("Mutante!!!")
+                         : ResponseEntity.status(FORBIDDEN).body("Humano"))
+                .onErrorResume(error -> Mono.just(ResponseEntity.badRequest().body(error.getMessage())));
     }
 
     @GetMapping(path = "/stats")
     public Mono<ResponseEntity<Object>> getStatsMutants() {
-        return statusMutantsUseCase.
-                .map(s -> ResponseEntity.ok().body((Object) s));
+        return statusMutantsUseCase.getStats()
+                .map(mutantStat -> ResponseEntity.ok().body((Object) mutantStat))
+                .onErrorResume(error -> Mono.just(ResponseEntity.internalServerError().body(error.getMessage())));
     }
 }

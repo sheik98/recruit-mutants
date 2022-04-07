@@ -17,12 +17,12 @@ public class ValidateMutantUseCase {
         return Mono.just(dna)
                 .flatMap(this::validateIn)
                 .flatMap(this::isMutant)
-                .flatMap(this::saveStats)
+                .flatMap(isMutant -> saveDna(isMutant, dna))
                 .onErrorResume(error -> Mono.error(new IOException("Descripcion del error: " + error.getMessage())));
     }
 
-    private Mono<Boolean> saveStats(Boolean isMutant) {
-        return mutantStatsRepository.saveStat(isMutant);
+    private Mono<Boolean> saveDna(Boolean isMutant, String[] dna) {
+        return mutantStatsRepository.saveDna(isMutant, dna);
     }
 
     private Mono<String[]> validateIn(String[] dna1) {

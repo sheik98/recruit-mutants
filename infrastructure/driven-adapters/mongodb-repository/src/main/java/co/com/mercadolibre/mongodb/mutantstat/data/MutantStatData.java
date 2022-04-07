@@ -11,7 +11,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
 public class MutantStatData {
     @Id
     private String id;
-    private Integer countMutantDna;
-    private Integer countHumanDna;
-    private Double ratio;
+    private String[] dna;
+    private Boolean isMutant;
+
 }

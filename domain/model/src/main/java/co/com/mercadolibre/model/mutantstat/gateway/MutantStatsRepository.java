@@ -4,6 +4,6 @@ import co.com.mercadolibre.model.mutantstat.MutantStat;
 import reactor.core.publisher.Mono;
 
 public interface MutantStatsRepository {
-    Mono<Boolean> saveStat(Boolean isMutant);
+    Mono<Boolean> saveDna(Boolean isMutant, String[] dna);
     Mono<MutantStat> getStats();
 }
