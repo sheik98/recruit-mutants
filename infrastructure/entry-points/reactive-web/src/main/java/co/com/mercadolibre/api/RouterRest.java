@@ -1,7 +1,8 @@
 package co.com.mercadolibre.api;
 
 import co.com.mercadolibre.api.dto.RequestDto;
-import co.com.mercadolibre.usecase.recruitMutant.ValidateMutantUseCase;
+import co.com.mercadolibre.usecase.recruitmutant.StatusMutantsUseCase;
+import co.com.mercadolibre.usecase.recruitmutant.ValidateMutantUseCase;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -17,6 +18,7 @@ import static org.springframework.http.HttpStatus.FORBIDDEN;
 @RequestMapping("/api/v1")
 public class RouterRest {
     private final ValidateMutantUseCase validateMutantUseCase;
+    private final StatusMutantsUseCase statusMutantsUseCase;
 
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE, path = "/mutant/")
     public Mono<ResponseEntity<Object>> isMutant(@RequestBody RequestDto requestDto) {
@@ -28,7 +30,7 @@ public class RouterRest {
 
     @GetMapping(path = "/stats")
     public Mono<ResponseEntity<Object>> getStatsMutants() {
-        return Mono.just("Stats")
+        return statusMutantsUseCase.
                 .map(s -> ResponseEntity.ok().body((Object) s));
     }
 }
