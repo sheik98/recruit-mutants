@@ -27,6 +27,9 @@ subprojects {
         implementation platform("org.springframework.boot:spring-boot-dependencies:${springBootVersion}")
     }
 
+    test {
+        useJUnitPlatform()
+    }
     test.finalizedBy(project.tasks.jacocoTestReport)
 
     jacocoTestReport {
