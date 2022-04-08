@@ -3,6 +3,8 @@ dependencies {
 
     implementation("org.springframework.boot:spring-boot-starter-data-mongodb-reactive:2.3.2.RELEASE")
     implementation("org.reactivecommons.utils:object-mapper-api:0.1.0")
+    implementation 'junit:junit:4.13.1'
+    testImplementation 'de.flapdoodle.embed:de.flapdoodle.embed.mongo'
     testImplementation("org.reactivecommons.utils:object-mapper:0.1.0")
 
 }

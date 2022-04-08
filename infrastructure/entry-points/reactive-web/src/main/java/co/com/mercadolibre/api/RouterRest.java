@@ -1,7 +1,6 @@
 package co.com.mercadolibre.api;
 
 import co.com.mercadolibre.api.dto.RequestDto;
-import co.com.mercadolibre.model.mutantstat.MutantStat;
 import co.com.mercadolibre.usecase.recruitmutant.StatusMutantsUseCase;
 import co.com.mercadolibre.usecase.recruitmutant.ValidateMutantUseCase;
 import lombok.RequiredArgsConstructor;
@@ -16,7 +15,6 @@ import static org.springframework.http.HttpStatus.FORBIDDEN;
 @CrossOrigin
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/v1")
 public class RouterRest {
     private final ValidateMutantUseCase validateMutantUseCase;
     private final StatusMutantsUseCase statusMutantsUseCase;

@@ -7,6 +7,7 @@ dependencies {
     implementation project(':model')
     implementation project(':usecase')
     implementation("org.springframework.boot:spring-boot-starter-data-mongodb-reactive:2.3.2.RELEASE")
+    implementation group: 'com.google.cloud.tools', name: 'appengine-gradle-plugin', version: '2.4.2'
 
     implementation 'org.springframework.boot:spring-boot-starter'
     runtimeOnly('org.springframework.boot:spring-boot-devtools')
