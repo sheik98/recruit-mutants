@@ -21,6 +21,7 @@ public class MutantStatDataRepositoryAdapter extends AdapterOperations<MutantSta
 
     private static final String IS_MUTANT= "isMutant";
 
+
     @Autowired
     public MutantStatDataRepositoryAdapter(MutantStatDataRepository repository,
                                            ObjectMapper mapper,
